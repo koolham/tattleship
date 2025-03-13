@@ -293,7 +293,6 @@
           document.getElementById("player1GuessButton").disabled = false;
           document.getElementById("player2Guess").disabled = false;
           document.getElementById("player2GuessButton").disabled = true;
-          // Hide both players' setup (including letters)
           document.getElementById("player1Setup").style.display = "none";
           document.getElementById("player2Setup").style.display = "none";
           makeBoards();
@@ -313,51 +312,89 @@
 
       function placeShip(player, size, word) {
         let placed = false;
-        while (!placed) {
-          let isHorizontal = Math.random() < 0.5 ? true : false;
-          let row,
-            col,
-            canPlace = true;
+        let attempts = 0;
+        const maxAttempts = 100;
 
-          if (isHorizontal) {
-            row = Math.floor(Math.random() * 10);
-            col = Math.floor(Math.random() * (10 - size + 1));
-            for (let i = 0; i < size; i++) {
-              if (player.board[row][col + i]) {
-                canPlace = false;
-                break;
-              }
-            }
-            if (canPlace) {
-              let shipSquares = [];
-              for (let i = 0; i < size; i++) {
-                player.board[row][col + i] = true;
-                player.letters[row][col + i] = word[i];
-                shipSquares.push({ row: row, col: col + i });
-              }
-              player.ships.push({ squares: shipSquares, hits: 0, size: size });
-              placed = true;
-            }
-          } else {
-            row = Math.floor(Math.random() * (10 - size + 1));
-            col = Math.floor(Math.random() * 10);
-            for (let i = 0; i < size; i++) {
-              if (player.board[row + i][col]) {
-                canPlace = false;
-                break;
-              }
-            }
-            if (canPlace) {
-              let shipSquares = [];
-              for (let i = 0; i < size; i++) {
-                player.board[row + i][col] = true;
-                player.letters[row + i][col] = word[i];
-                shipSquares.push({ row: row + i, col: col });
-              }
-              player.ships.push({ squares: shipSquares, hits: 0, size: size });
-              placed = true;
+        while (!placed && attempts < maxAttempts) {
+          let isHorizontal = Math.random() < 0.5;
+          let row = Math.floor(
+            Math.random() * (10 - (isHorizontal ? 0 : size))
+          );
+          let col = Math.floor(
+            Math.random() * (10 - (isHorizontal ? size : 0))
+          );
+          let canPlace = true;
+
+          // Check if the position is valid, allowing overlap with matching letters
+          for (let i = 0; i < size; i++) {
+            let r = isHorizontal ? row : row + i;
+            let c = isHorizontal ? col + i : col;
+            if (player.board[r][c] && player.letters[r][c] !== word[i]) {
+              canPlace = false; // Conflict if letters don't match
+              break;
             }
           }
+
+          if (canPlace) {
+            let shipSquares = [];
+            for (let i = 0; i < size; i++) {
+              let r = isHorizontal ? row : row + i;
+              let c = isHorizontal ? col + i : col;
+              if (!player.board[r][c]) {
+                // Only mark new squares as occupied
+                player.board[r][c] = true;
+              }
+              player.letters[r][c] = word[i]; // Set letter (even if overlapping)
+              shipSquares.push({ row: r, col: c });
+            }
+            player.ships.push({ squares: shipSquares, hits: 0, size: size });
+            placed = true;
+          }
+          attempts++;
+        }
+
+        if (!placed) {
+          // Fallback: Place without overlap if overlap fails
+          attempts = 0;
+          while (!placed && attempts < maxAttempts) {
+            let isHorizontal = Math.random() < 0.5;
+            let row = Math.floor(
+              Math.random() * (10 - (isHorizontal ? 0 : size))
+            );
+            let col = Math.floor(
+              Math.random() * (10 - (isHorizontal ? size : 0))
+            );
+            let canPlace = true;
+
+            for (let i = 0; i < size; i++) {
+              let r = isHorizontal ? row : row + i;
+              let c = isHorizontal ? col + i : col;
+              if (player.board[r][c]) {
+                canPlace = false;
+                break;
+              }
+            }
+
+            if (canPlace) {
+              let shipSquares = [];
+              for (let i = 0; i < size; i++) {
+                let r = isHorizontal ? row : row + i;
+                let c = isHorizontal ? col + i : col;
+                player.board[r][c] = true;
+                player.letters[r][c] = word[i];
+                shipSquares.push({ row: r, col: c });
+              }
+              player.ships.push({ squares: shipSquares, hits: 0, size: size });
+              placed = true;
+            }
+            attempts++;
+          }
+        }
+
+        if (!placed) {
+          console.error(
+            `Failed to place ship of size ${size} with word ${word}`
+          );
         }
       }
 
