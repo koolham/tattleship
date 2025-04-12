@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Tattleship",
+  "name": "Tattleship - A Game of Strategy",
+  "description": "Tattleship is a strategic game where players use their wits to outsmart their opponents.",
   "icons": [
     {
       "src": "favicon.ico",
