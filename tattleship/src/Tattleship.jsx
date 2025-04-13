@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Tattleship.css";
 
 const GRID_SIZE = 10;
@@ -466,12 +466,14 @@ function Tattleship() {
             setHits(hits + 1);
             setScore(score + 5);
             showMessage(`Hit! (+5 points)`);
+            setActiveCell(null); // Only clear active cell on correct guess
             if (ship.guessedLetters.join("") === ship.word) {
               ship.sunk = true;
               setScore(score + 20);
               showMessage(`Ship sunk! Word: ${ship.word} (+20 points)`);
             }
           }
+          // Keep focus on wrong guesses by maintaining the activeCell state
         }
       }
       return ship;
@@ -479,12 +481,21 @@ function Tattleship() {
 
     setShips(newShips);
     setGrid(newGrid);
-    setActiveCell(null);
 
     if (newShips.every((ship) => ship.sunk)) {
       setGameOver(true);
       showMessage(`Game Over! You won with ${score + 20} points!`);
     }
+
+    // Immediately re-focus the input after state updates
+    requestAnimationFrame(() => {
+      const input = document.querySelector(
+        `.cell[data-row="${row}"][data-col="${col}"] input`
+      );
+      if (input) {
+        input.focus();
+      }
+    });
   };
 
   const resetGame = () => {
@@ -543,6 +554,8 @@ function Tattleship() {
                         ? "spotted"
                         : ""
                     }`}
+                    data-row={rowIndex}
+                    data-col={colIndex}
                     onClick={() => handleCellClick(rowIndex, colIndex)}
                   >
                     {cell === 3 ? (
