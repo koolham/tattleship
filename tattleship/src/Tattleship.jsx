@@ -512,6 +512,13 @@ function Tattleship() {
   return (
     <div className="game-container">
       <div className="tattleship">
+        <img
+          src="/logo192.png"
+          alt="Tattleship Logo"
+          className="game-logo"
+          width="120"
+          height="120"
+        />
         <h1>Tattleship</h1>
         <p>
           Hits: {hits}/{TOTAL_SHIP_CELLS} | Misses: {misses} | Guesses:{" "}
