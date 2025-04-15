@@ -8,7 +8,7 @@ const DIFFICULTY = {
   HARD: { ships: [2, 3, 3, 4, 5] },
 };
 
-const DEFAULT_DIFFICULTY = "MEDIUM";
+const DEFAULT_DIFFICULTY = "EASY";
 
 // Word lists for each ship size
 const WORDS_2 = [
@@ -435,14 +435,22 @@ function Tattleship() {
   const [gameOver, setGameOver] = useState(false);
   const [activeCell, setActiveCell] = useState(null);
   const [message, setMessage] = useState("");
+  const [fadingMisses, setFadingMisses] = useState([]);
+  const messageTimeout = useRef();
 
   useEffect(() => {
     initializeGame();
   }, []);
 
-  const showMessage = (msg) => {
+  const showMessage = (msg, persist = false) => {
     setMessage(msg);
-    setTimeout(() => setMessage(""), 3000);
+    if (messageTimeout.current) {
+      clearTimeout(messageTimeout.current);
+      messageTimeout.current = null;
+    }
+    if (!persist) {
+      messageTimeout.current = setTimeout(() => setMessage(""), 3000);
+    }
   };
 
   const initializeGame = () => {
@@ -542,6 +550,12 @@ function Tattleship() {
       newGrid[row][col] = 3;
       setMisses(misses + 1);
       showMessage("Missed shot!");
+      setGrid(newGrid); // Show the miss immediately
+      setFadingMisses((prev) => [...prev, `${row},${col}`]);
+      setTimeout(() => {
+        setFadingMisses((prev) => prev.filter((id) => id !== `${row},${col}`));
+        // Do NOT reset the cell to 0 here!
+      }, 1000);
     }
 
     setGrid(newGrid);
@@ -594,7 +608,13 @@ function Tattleship() {
 
     if (newShips.every((ship) => ship.sunk)) {
       setGameOver(true);
-      showMessage(`Game Over! You won with ${score + 20} points!`);
+      // Calculate bonus: total points divided by number of guesses (rounded down)
+      const bonus = guesses > 0 ? Math.floor((score + 20) / guesses) : 0;
+      setScore((prev) => prev + bonus);
+      showMessage(
+        `Game Over! You won with ${score + 20 + bonus} points! Bonus: ${bonus}`,
+        true // persist the message
+      );
     }
 
     // Immediately re-focus the input after state updates
@@ -660,10 +680,26 @@ function Tattleship() {
           <div className="event-message">{message}</div>
         </div>
 
-        <p>
-          Hits: {hits}/{getTotalShipCells(difficulty)} | Misses: {misses} |
-          Guesses: {guesses} | Score: {score}
-        </p>
+        <div className="stats">
+          <div className="stat-group">
+            <span className="stat-label">Hits:</span>
+            <span className="stat-value">{hits}</span>
+            <span className="stat-divider">/</span>
+            <span className="stat-total">{getTotalShipCells(difficulty)}</span>
+          </div>
+          <div className="stat-group">
+            <span className="stat-label">Misses:</span>
+            <span className="stat-value">{misses}</span>
+          </div>
+          <div className="stat-group">
+            <span className="stat-label">Guesses:</span>
+            <span className="stat-value">{guesses}</span>
+          </div>
+          <div className="stat-group">
+            <span className="stat-label">Score:</span>
+            <span className="stat-value">{score}</span>
+          </div>
+        </div>
 
         <div className="grid">
           {grid.map((row, rowIndex) => (
@@ -704,7 +740,9 @@ function Tattleship() {
                     onClick={() => handleCellClick(rowIndex, colIndex)}
                   >
                     {cell === 3 ? (
-                      "O"
+                      fadingMisses.includes(`${rowIndex},${colIndex}`) ? (
+                        <span className="miss-splash" />
+                      ) : null
                     ) : cell === 2 ? (
                       letterGrid[rowIndex][colIndex]
                     ) : cell === 4 && ship && !ship.sunk ? (
