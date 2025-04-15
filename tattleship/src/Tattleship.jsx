@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Tattleship.css";
 
 const GRID_SIZE = 10;
-const SHIP_SIZES = [2, 3, 4];
+const DIFFICULTY = {
+  EASY: { ships: [2, 3, 3] },
+  MEDIUM: { ships: [2, 3, 3, 4] },
+  HARD: { ships: [2, 3, 3, 4, 5] },
+};
+
+const DEFAULT_DIFFICULTY = "MEDIUM";
 
 // Word lists for each ship size
 const WORDS_2 = [
@@ -307,15 +313,118 @@ const WORDS_4 = [
   "DESK",
 ];
 
+const WORDS_5 = [
+  "FLEET",
+  "STERN",
+  "SHORE",
+  "OCEAN",
+  "WHALE",
+  "BEACH",
+  "WATER",
+  "WAVES",
+  "SURGE",
+  "STORM",
+  "FLOAT",
+  "PEACE",
+  "SOUND",
+  "STEAM",
+  "CRASH",
+  "DRIFT",
+  "SPRAY",
+  "PLANK",
+  "CABIN",
+  "CARGO",
+  "COAST",
+  "CORAL",
+  "DEPTH",
+  "CHART",
+  "BOARD",
+  "ROUGH",
+  "CLAIM",
+  "VALVE",
+  "SLIDE",
+  "BLOCK",
+  "BRAVE",
+  "CLEAN",
+  "COVER",
+  "CYCLE",
+  "DAILY",
+  "EARTH",
+  "FAITH",
+  "FIELD",
+  "GLASS",
+  "GRASS",
+  "HAPPY",
+  "HEART",
+  "HONEY",
+  "HORSE",
+  "HOUSE",
+  "JUICE",
+  "KNIFE",
+  "LEMON",
+  "LIGHT",
+  "LINEN",
+  "MAGIC",
+  "MANGO",
+  "MARCH",
+  "MOUSE",
+  "MUSIC",
+  "NIGHT",
+  "NOISE",
+  "OFFER",
+  "OLIVE",
+  "PAINT",
+  "PANEL",
+  "PEARL",
+  "PLANT",
+  "PLATE",
+  "PRIZE",
+  "QUEEN",
+  "QUIET",
+  "RANGE",
+  "RIVER",
+  "ROBIN",
+  "SALAD",
+  "SAUCE",
+  "SHEEP",
+  "SHEET",
+  "SHINE",
+  "SHIRT",
+  "SHOCK",
+  "SMILE",
+  "SNAKE",
+  "SOLID",
+  "SOUTH",
+  "SPACE",
+  "SPOON",
+  "SQUAD",
+  "STAFF",
+  "STAGE",
+  "STEEL",
+  "STONE",
+  "STORE",
+  "SUGAR",
+  "TABLE",
+  "TEACH",
+  "TIGER",
+  "TOAST",
+  "TOOTH",
+  "TRAIN",
+  "TRUCK",
+  "UNCLE",
+  "UNION",
+  "VIRUS",
+];
+
 const SHIP_WORDS = {
   2: WORDS_2,
   3: WORDS_3,
   4: WORDS_4,
+  5: WORDS_5,
 };
 
-const TOTAL_SHIP_CELLS = SHIP_SIZES.reduce((sum, size) => sum + size, 0); // 9
-
 function Tattleship() {
+  const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
   const [grid, setGrid] = useState([]);
   const [letterGrid, setLetterGrid] = useState([]);
   const [ships, setShips] = useState([]);
@@ -337,6 +446,7 @@ function Tattleship() {
   };
 
   const initializeGame = () => {
+    const shipSizes = DIFFICULTY[difficulty].ships;
     const newGrid = Array(GRID_SIZE)
       .fill()
       .map(() => Array(GRID_SIZE).fill(0));
@@ -345,7 +455,7 @@ function Tattleship() {
       .map(() => Array(GRID_SIZE).fill(""));
     const placedShips = [];
 
-    SHIP_SIZES.forEach((shipLength) => {
+    shipSizes.forEach((shipLength) => {
       // Randomly select a word from the appropriate list
       const wordList = SHIP_WORDS[shipLength];
       const word = wordList[Math.floor(Math.random() * wordList.length)];
@@ -509,6 +619,14 @@ function Tattleship() {
     initializeGame();
   };
 
+  const handleDifficultyChange = (newDifficulty) => {
+    setDifficulty(newDifficulty);
+    resetGame();
+  };
+
+  const getTotalShipCells = (difficulty) =>
+    DIFFICULTY[difficulty].ships.reduce((sum, size) => sum + size, 0);
+
   return (
     <div className="game-container">
       <div className="tattleship">
@@ -520,13 +638,33 @@ function Tattleship() {
           height="120"
         />
         <h1>Tattleship</h1>
-        <p>
-          Hits: {hits}/{TOTAL_SHIP_CELLS} | Misses: {misses} | Guesses:{" "}
-          {guesses} | Score: {score}
-        </p>
-        <div className="message-placeholder">
-          <p className="event-message">{message}</p>
+
+        <div className="difficulty-controls">
+          {Object.keys(DIFFICULTY).map((diff) => (
+            <button
+              key={diff}
+              className={`difficulty-button ${
+                difficulty === diff ? "active" : ""
+              }`}
+              onClick={() => handleDifficultyChange(diff)}
+            >
+              {diff.toLowerCase()}
+            </button>
+          ))}
+          <button className="reset-button" onClick={resetGame}>
+            Reset
+          </button>
         </div>
+
+        <div className="message-placeholder">
+          <div className="event-message">{message}</div>
+        </div>
+
+        <p>
+          Hits: {hits}/{getTotalShipCells(difficulty)} | Misses: {misses} |
+          Guesses: {guesses} | Score: {score}
+        </p>
+
         <div className="grid">
           {grid.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
@@ -596,9 +734,6 @@ function Tattleship() {
           ))}
         </div>
       </div>
-      <button className="reset-button" onClick={resetGame}>
-        Reset Game
-      </button>
     </div>
   );
 }
