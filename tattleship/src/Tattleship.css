@@ -83,11 +83,50 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.miss {
-  background-color: #3498db;
+.cell.miss {
+  background: #3498db;
   color: #fff;
-  border-color: #2980b9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.cell.miss:hover {
+  /* Only visual feedback, do not set opacity or color */
+  box-shadow: 0 0 8px #2980b9;
+}
+
+.miss-fade {
+  opacity: 0;
+  transition: opacity 1s linear;
+}
+
+.miss-splash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  animation: splash-pop 0.7s cubic-bezier(0.4, 2, 0.6, 1) forwards;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes splash-pop {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  70% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
 }
 
 .spotted {
@@ -136,7 +175,7 @@ button:active {
   margin: 0 auto 20px;
   border: 3px solid #2c3e50;
   border-radius: 10px;
-  padding: 10px;
+  padding: 0; /* Remove any padding */
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -195,7 +234,7 @@ button:active {
   border: 1px solid #e74c3c;
   color: #e74c3c;
   border-radius: 0;
-  border-left: none;
+  border-left: 1px solid #e74c3c; /* Red border between buttons */
   transition: background 0.2s, color 0.2s;
   outline: none;
   cursor: pointer;
@@ -210,4 +249,43 @@ button:active {
 .reset-button:focus {
   background: #e74c3c;
   color: #fff;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 0; /* Remove space between stat cards */
+  margin: 18px 0 18px 0;
+  font-size: 1.1em;
+}
+
+.stat-group {
+  background: #eaf6fb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(52, 152, 219, 0.08);
+  gap: 6px;
+  /* Remove margin between stat groups if present */
+  margin: 0;
+}
+
+.stat-label {
+  color: #2980b9;
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.stat-value {
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.stat-divider,
+.stat-total {
+  color: #7f8c8d;
+  font-weight: 500;
+  font-size: 1em;
 }
