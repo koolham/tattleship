@@ -650,14 +650,16 @@ function Tattleship() {
   return (
     <div className="game-container">
       <div className="tattleship">
-        <img
-          src="/logo192.png"
-          alt="Tattleship Logo"
-          className="game-logo"
-          width="120"
-          height="120"
-        />
-        <h1>Tattleship</h1>
+        <div className="logo-divider" style={{ flexDirection: "column" }}>
+          <img
+            src="/logo192.png"
+            alt="Tattleship Logo"
+            className="game-logo"
+            width="120"
+            height="120"
+          />
+          <h1 style={{ margin: "16px 0 0 0" }}>Tattleship</h1>
+        </div>
 
         <div className="difficulty-controls">
           {Object.keys(DIFFICULTY).map((diff) => (
@@ -772,6 +774,9 @@ function Tattleship() {
           ))}
         </div>
       </div>
+      <footer className="footer">
+        &copy; {new Date().getFullYear()} Landex Development
+      </footer>
     </div>
   );
 }
