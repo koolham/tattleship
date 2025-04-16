@@ -14,6 +14,13 @@ const DEFAULT_DIFFICULTY = "EASY";
 const SPOT_POINTS = 10;
 const HIT_POINTS = 5;
 const SUNK_POINTS = 20;
+const BONUS_FORMULA = (score, guesses, misses) =>
+  guesses > 0 && misses > 0
+    ? Math.floor((score * 100) / (guesses + misses))
+    : 0;
+
+const GAME_OVER_MESSAGE = (score, bonus) =>
+  `Game Over! You won with ${score} points! Bonus: ${bonus}`;
 
 function Tattleship() {
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
@@ -259,12 +266,11 @@ function Tattleship() {
 
     if (newShips.every((ship) => ship.sunk)) {
       setGameOver(true);
-      // Calculate bonus: total points divided by number of guesses (rounded down)
-      const bonus = guesses > 0 ? Math.floor((score + 20) / guesses) : 0;
+      const bonus = BONUS_FORMULA(score + SUNK_POINTS, guesses, misses);
       setScore((prev) => prev + bonus);
       triggerScoreAnimation(bonus);
       showMessage(
-        `Game Over! You won with ${score + 20 + bonus} points! Bonus: ${bonus}`,
+        GAME_OVER_MESSAGE(score + SUNK_POINTS + bonus, bonus),
         true // persist the message
       );
     }
