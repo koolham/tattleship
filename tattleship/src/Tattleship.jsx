@@ -11,6 +11,10 @@ const DIFFICULTY = {
 
 const DEFAULT_DIFFICULTY = "EASY";
 
+const SPOT_POINTS = 10;
+const HIT_POINTS = 5;
+const SUNK_POINTS = 20;
+
 function Tattleship() {
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
   const [grid, setGrid] = useState([]);
@@ -54,12 +58,14 @@ function Tattleship() {
     }
   };
 
-  const triggerScoreAnimation = (value) => {
+  const triggerScoreAnimation = (value, delay = 0) => {
     const id = scoreAnimId.current++;
-    setScoreAnimations((prev) => [...prev, { id, value }]);
     setTimeout(() => {
-      setScoreAnimations((prev) => prev.filter((anim) => anim.id !== id));
-    }, 1000);
+      setScoreAnimations((prev) => [...prev, { id, value }]);
+      setTimeout(() => {
+        setScoreAnimations((prev) => prev.filter((anim) => anim.id !== id));
+      }, 2000);
+    }, delay);
   };
 
   const initializeGame = () => {
@@ -143,9 +149,9 @@ function Tattleship() {
           ship.guessedLetters[cellIndex] = ship.word[cellIndex];
           newGrid[row][col] = 2;
           setHits(hits + 1);
-          setScore(score + 10);
-          triggerScoreAnimation(10);
-          showMessage(`Ship spotted! (+10 points)`);
+          setScore(score + SPOT_POINTS);
+          triggerScoreAnimation(SPOT_POINTS);
+          showMessage(`Ship spotted! (+${SPOT_POINTS} points)`);
           ship.cells.forEach(([r, c]) => {
             if (r !== row || c !== col) {
               newGrid[r][c] = 4;
@@ -220,9 +226,9 @@ function Tattleship() {
           if (guessedLetter === shipObj.word[idx]) {
             newGrid[row][col] = 2;
             setHits(hits + 1);
-            setScore(score + 5);
-            triggerScoreAnimation(5);
-            showMessage(`Hit! (+5 points)`);
+            setScore(score + HIT_POINTS);
+            triggerScoreAnimation(HIT_POINTS);
+            showMessage(`Hit! (+${HIT_POINTS} points)`);
             // Find next unguessed cell in this ship
             if (shipObj.guessedLetters.join("") !== shipObj.word) {
               for (let i = 0; i < shipObj.cells.length; i++) {
@@ -234,9 +240,11 @@ function Tattleship() {
             }
             if (shipObj.guessedLetters.join("") === shipObj.word) {
               shipObj.sunk = true;
-              setScore(score + 20);
-              triggerScoreAnimation(20);
-              showMessage(`Ship sunk! Word: ${shipObj.word} (+20 points)`);
+              setScore(score + SUNK_POINTS);
+              triggerScoreAnimation(SUNK_POINTS, 700);
+              showMessage(
+                `Ship sunk! Word: ${shipObj.word} (+${SUNK_POINTS} points)`
+              );
               nextCell = null; // Don't move focus if ship is sunk
             }
           }
