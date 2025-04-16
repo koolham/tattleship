@@ -112,6 +112,7 @@
   color: #fff;
   border-color: #c0392b;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: fire-hit 0.7s cubic-bezier(0.4, 2, 0.6, 1);
 }
 
 .cell.miss {
@@ -157,6 +158,27 @@
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+@keyframes fire-hit {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7), 0 0 0 0 rgba(255, 193, 7, 0.5);
+    background-color: #e74c3c;
+  }
+  40% {
+    box-shadow: 0 0 16px 8px rgba(255, 87, 34, 0.7),
+      0 0 32px 16px rgba(255, 193, 7, 0.5);
+    background-color: #ff7043;
+  }
+  70% {
+    box-shadow: 0 0 24px 16px rgba(255, 193, 7, 0.7),
+      0 0 48px 24px rgba(255, 87, 34, 0.5);
+    background-color: #ffb300;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 87, 34, 0), 0 0 0 0 rgba(255, 193, 7, 0);
+    background-color: #e74c3c;
   }
 }
 
@@ -334,6 +356,34 @@ button:active {
   gap: 4px;
   margin: 0;
   font-size: 0.98em;
+  position: relative; /* Ensure .score-float is positioned relative to this */
+}
+
+.score-float {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #27ae60;
+  font-weight: bold;
+  font-size: 1.1em;
+  pointer-events: none;
+  animation: score-float-up 2s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes score-float-up {
+  0% {
+    opacity: 1;
+    top: 0;
+  }
+  80% {
+    opacity: 1;
+    top: -24px;
+  }
+  100% {
+    opacity: 0;
+    top: -32px;
+  }
 }
 
 .stat-label {

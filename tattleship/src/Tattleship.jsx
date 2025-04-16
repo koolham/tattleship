@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Tattleship.css";
+import { WORDS_2, WORDS_3, WORDS_4, WORDS_5, SHIP_WORDS } from "./words";
 
 const GRID_SIZE = 10;
 const DIFFICULTY = {
@@ -9,419 +10,6 @@ const DIFFICULTY = {
 };
 
 const DEFAULT_DIFFICULTY = "EASY";
-
-// Word lists for each ship size
-const WORDS_2 = [
-  "AT",
-  "BE",
-  "BY",
-  "DO",
-  "GO",
-  "HE",
-  "IF",
-  "IN",
-  "IS",
-  "IT",
-  "ME",
-  "NO",
-  "OF",
-  "ON",
-  "OR",
-  "SO",
-  "TO",
-  "UP",
-  "US",
-  "WE",
-  "AN",
-  "AS",
-  "AX",
-  "BO",
-  "CO",
-  "DE",
-  "ED",
-  "EF",
-  "EL",
-  "EM",
-  "EN",
-  "ER",
-  "ES",
-  "ET",
-  "EX",
-  "FA",
-  "FE",
-  "HA",
-  "HI",
-  "HO",
-  "ID",
-  "JO",
-  "LA",
-  "LI",
-  "LO",
-  "MA",
-  "MI",
-  "MO",
-  "MU",
-  "MY",
-  "NA",
-  "NE",
-  "NU",
-  "OD",
-  "OE",
-  "OH",
-  "OK",
-  "OM",
-  "OP",
-  "OS",
-  "OW",
-  "OX",
-  "OY",
-  "PA",
-  "PE",
-  "PI",
-  "PO",
-  "QI",
-  "RE",
-  "SI",
-  "TA",
-  "TE",
-  "TI",
-  "TU",
-  "UM",
-  "UN",
-  "UT",
-  "WO",
-  "XI",
-  "XU",
-  "YA",
-  "YE",
-  "YO",
-  "ZA",
-  "AD",
-  "AG",
-  "AH",
-  "AI",
-  "AL",
-  "AM",
-  "AR",
-  "AW",
-  "AY",
-  "BA",
-  "BI",
-  "DA",
-  "DI",
-  "EA",
-  "EH",
-];
-
-const WORDS_3 = [
-  "CAT",
-  "DOG",
-  "BAT",
-  "RAT",
-  "HAT",
-  "MAT",
-  "PAT",
-  "SAT",
-  "FAT",
-  "LET",
-  "BET",
-  "SET",
-  "GET",
-  "JET",
-  "NET",
-  "PET",
-  "RED",
-  "BED",
-  "LED",
-  "FED",
-  "ADD",
-  "AND",
-  "ANY",
-  "ARE",
-  "ARM",
-  "ART",
-  "ASK",
-  "ATE",
-  "BAD",
-  "BAG",
-  "BAN",
-  "BAR",
-  "BAY",
-  "BEE",
-  "BIG",
-  "BIN",
-  "BIT",
-  "BOB",
-  "BOW",
-  "BOX",
-  "BOY",
-  "BUD",
-  "BUG",
-  "BUN",
-  "BUS",
-  "BUT",
-  "BUY",
-  "CAN",
-  "CAR",
-  "CON",
-  "COT",
-  "COW",
-  "CRY",
-  "CUP",
-  "CUT",
-  "DAY",
-  "DEN",
-  "DID",
-  "DIE",
-  "DIG",
-  "DIM",
-  "DIP",
-  "DON",
-  "DRY",
-  "DUE",
-  "DUG",
-  "DYE",
-  "EAR",
-  "EAT",
-  "EGG",
-  "END",
-  "EYE",
-  "FAN",
-  "FAR",
-  "FEE",
-  "FEW",
-  "FIG",
-  "FIN",
-  "FIT",
-  "FIX",
-  "FLY",
-  "FOG",
-  "FOR",
-  "FOX",
-  "FUN",
-  "GAP",
-  "GAS",
-  "GAY",
-  "GEM",
-  "GIN",
-  "GOT",
-  "GUM",
-  "GUN",
-  "GUY",
-  "HAD",
-  "HAM",
-];
-
-const WORDS_4 = [
-  "SHIP",
-  "BOAT",
-  "FISH",
-  "SAIL",
-  "WAVE",
-  "PORT",
-  "DOCK",
-  "CREW",
-  "DECK",
-  "HULL",
-  "KEEL",
-  "MAST",
-  "RUDD",
-  "BOWS",
-  "STERN",
-  "HOLD",
-  "ANCH",
-  "ROPE",
-  "KNOT",
-  "WIND",
-  "TIDE",
-  "SEAS",
-  "GALE",
-  "CALM",
-  "REEF",
-  "BUOY",
-  "HOOK",
-  "LINE",
-  "SINK",
-  "SWIM",
-  "DIVE",
-  "RAFT",
-  "OARS",
-  "PADD",
-  "YACHT",
-  "JETS",
-  "FOAM",
-  "MIST",
-  "FOGS",
-  "SURF",
-  "BEAM",
-  "BULK",
-  "CARG",
-  "FLEET",
-  "NAVY",
-  "PIER",
-  "QUAY",
-  "RIGG",
-  "SKEG",
-  "TACK",
-  "TRIM",
-  "VANE",
-  "WAKE",
-  "WHARF",
-  "YARD",
-  "BARN",
-  "BELL",
-  "BILL",
-  "BIRD",
-  "BLOW",
-  "BLUE",
-  "BOLT",
-  "BOND",
-  "BOOK",
-  "BURN",
-  "CALL",
-  "CAME",
-  "CAMP",
-  "CARD",
-  "CASE",
-  "CASH",
-  "CAST",
-  "CAVE",
-  "CHIN",
-  "CITY",
-  "CLAY",
-  "CLUB",
-  "COAL",
-  "CODE",
-  "COLD",
-  "COOK",
-  "CORE",
-  "CORN",
-  "COST",
-  "CROP",
-  "CUBE",
-  "CURE",
-  "DARE",
-  "DARK",
-  "DASH",
-  "DATE",
-  "DAWN",
-  "DEAL",
-  "DEAR",
-  "DEBT",
-  "DEEP",
-  "DENY",
-  "DESK",
-];
-
-const WORDS_5 = [
-  "FLEET",
-  "STERN",
-  "SHORE",
-  "OCEAN",
-  "WHALE",
-  "BEACH",
-  "WATER",
-  "WAVES",
-  "SURGE",
-  "STORM",
-  "FLOAT",
-  "PEACE",
-  "SOUND",
-  "STEAM",
-  "CRASH",
-  "DRIFT",
-  "SPRAY",
-  "PLANK",
-  "CABIN",
-  "CARGO",
-  "COAST",
-  "CORAL",
-  "DEPTH",
-  "CHART",
-  "BOARD",
-  "ROUGH",
-  "CLAIM",
-  "VALVE",
-  "SLIDE",
-  "BLOCK",
-  "BRAVE",
-  "CLEAN",
-  "COVER",
-  "CYCLE",
-  "DAILY",
-  "EARTH",
-  "FAITH",
-  "FIELD",
-  "GLASS",
-  "GRASS",
-  "HAPPY",
-  "HEART",
-  "HONEY",
-  "HORSE",
-  "HOUSE",
-  "JUICE",
-  "KNIFE",
-  "LEMON",
-  "LIGHT",
-  "LINEN",
-  "MAGIC",
-  "MANGO",
-  "MARCH",
-  "MOUSE",
-  "MUSIC",
-  "NIGHT",
-  "NOISE",
-  "OFFER",
-  "OLIVE",
-  "PAINT",
-  "PANEL",
-  "PEARL",
-  "PLANT",
-  "PLATE",
-  "PRIZE",
-  "QUEEN",
-  "QUIET",
-  "RANGE",
-  "RIVER",
-  "ROBIN",
-  "SALAD",
-  "SAUCE",
-  "SHEEP",
-  "SHEET",
-  "SHINE",
-  "SHIRT",
-  "SHOCK",
-  "SMILE",
-  "SNAKE",
-  "SOLID",
-  "SOUTH",
-  "SPACE",
-  "SPOON",
-  "SQUAD",
-  "STAFF",
-  "STAGE",
-  "STEEL",
-  "STONE",
-  "STORE",
-  "SUGAR",
-  "TABLE",
-  "TEACH",
-  "TIGER",
-  "TOAST",
-  "TOOTH",
-  "TRAIN",
-  "TRUCK",
-  "UNCLE",
-  "UNION",
-  "VIRUS",
-];
-
-const SHIP_WORDS = {
-  2: WORDS_2,
-  3: WORDS_3,
-  4: WORDS_4,
-  5: WORDS_5,
-};
 
 function Tattleship() {
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
@@ -436,11 +24,24 @@ function Tattleship() {
   const [activeCell, setActiveCell] = useState(null);
   const [message, setMessage] = useState("");
   const [fadingMisses, setFadingMisses] = useState([]);
+  const [scoreAnimations, setScoreAnimations] = useState([]); // {id, value}
+  const [highScore, setHighScore] = useState(() => {
+    const saved = localStorage.getItem("tattleshipHighScore");
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  let scoreAnimId = useRef(0);
   const messageTimeout = useRef();
 
   useEffect(() => {
     initializeGame();
   }, []);
+
+  useEffect(() => {
+    if (gameOver && score > highScore) {
+      setHighScore(score);
+      localStorage.setItem("tattleshipHighScore", score);
+    }
+  }, [gameOver, score, highScore]);
 
   const showMessage = (msg, persist = false) => {
     setMessage(msg);
@@ -451,6 +52,14 @@ function Tattleship() {
     if (!persist) {
       messageTimeout.current = setTimeout(() => setMessage(""), 3000);
     }
+  };
+
+  const triggerScoreAnimation = (value) => {
+    const id = scoreAnimId.current++;
+    setScoreAnimations((prev) => [...prev, { id, value }]);
+    setTimeout(() => {
+      setScoreAnimations((prev) => prev.filter((anim) => anim.id !== id));
+    }, 1000);
   };
 
   const initializeGame = () => {
@@ -521,6 +130,7 @@ function Tattleship() {
 
     const newGrid = [...grid.map((row) => [...row])];
     let newShips = [...ships];
+    let nextCell = null;
 
     if (grid[row][col] === 1 || grid[row][col] === 4) {
       newShips = newShips.map((ship) => {
@@ -534,12 +144,20 @@ function Tattleship() {
           newGrid[row][col] = 2;
           setHits(hits + 1);
           setScore(score + 10);
+          triggerScoreAnimation(10);
           showMessage(`Ship spotted! (+10 points)`);
           ship.cells.forEach(([r, c]) => {
             if (r !== row || c !== col) {
               newGrid[r][c] = 4;
             }
           });
+          // Auto shift to the next cell to guess
+          for (let i = 0; i < ship.cells.length; i++) {
+            if (i !== cellIndex && ship.guessedLetters[i] !== ship.word[i]) {
+              nextCell = ship.cells[i];
+              break;
+            }
+          }
           return { ...ship };
         } else if (ship.spotted && !ship.sunk) {
           setActiveCell([row, col]);
@@ -560,6 +178,20 @@ function Tattleship() {
 
     setGrid(newGrid);
     setShips(newShips);
+
+    // Move focus to the next cell to guess if ship was just spotted
+    if (nextCell) {
+      setActiveCell(nextCell);
+      requestAnimationFrame(() => {
+        const input = document.querySelector(
+          `.cell[data-row="${nextCell[0]}"][data-col="${nextCell[1]}"] input`
+        );
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
   };
 
   const handleLetterInput = (e, row, col) => {
@@ -578,29 +210,40 @@ function Tattleship() {
       setGuesses(guesses + 1);
     }
 
-    newShips = newShips.map((ship) => {
-      if (ship.spotted && !ship.sunk) {
-        const cellIndex = ship.cells.findIndex(
-          ([r, c]) => r === row && c === col
-        );
-        if (cellIndex !== -1) {
-          ship.guessedLetters[cellIndex] = guessedLetter;
-          if (guessedLetter === ship.word[cellIndex]) {
+    let nextCell = null;
+
+    newShips = newShips.map((shipObj) => {
+      if (shipObj.spotted && !shipObj.sunk) {
+        const idx = shipObj.cells.findIndex(([r, c]) => r === row && c === col);
+        if (idx !== -1) {
+          shipObj.guessedLetters[idx] = guessedLetter;
+          if (guessedLetter === shipObj.word[idx]) {
             newGrid[row][col] = 2;
             setHits(hits + 1);
             setScore(score + 5);
+            triggerScoreAnimation(5);
             showMessage(`Hit! (+5 points)`);
-            setActiveCell(null); // Only clear active cell on correct guess
-            if (ship.guessedLetters.join("") === ship.word) {
-              ship.sunk = true;
+            // Find next unguessed cell in this ship
+            if (shipObj.guessedLetters.join("") !== shipObj.word) {
+              for (let i = 0; i < shipObj.cells.length; i++) {
+                if (shipObj.guessedLetters[i] !== shipObj.word[i]) {
+                  nextCell = shipObj.cells[i];
+                  break;
+                }
+              }
+            }
+            if (shipObj.guessedLetters.join("") === shipObj.word) {
+              shipObj.sunk = true;
               setScore(score + 20);
-              showMessage(`Ship sunk! Word: ${ship.word} (+20 points)`);
+              triggerScoreAnimation(20);
+              showMessage(`Ship sunk! Word: ${shipObj.word} (+20 points)`);
+              nextCell = null; // Don't move focus if ship is sunk
             }
           }
           // Keep focus on wrong guesses by maintaining the activeCell state
         }
       }
-      return ship;
+      return shipObj;
     });
 
     setShips(newShips);
@@ -611,21 +254,39 @@ function Tattleship() {
       // Calculate bonus: total points divided by number of guesses (rounded down)
       const bonus = guesses > 0 ? Math.floor((score + 20) / guesses) : 0;
       setScore((prev) => prev + bonus);
+      triggerScoreAnimation(bonus);
       showMessage(
         `Game Over! You won with ${score + 20 + bonus} points! Bonus: ${bonus}`,
         true // persist the message
       );
     }
 
-    // Immediately re-focus the input after state updates
-    requestAnimationFrame(() => {
-      const input = document.querySelector(
-        `.cell[data-row="${row}"][data-col="${col}"] input`
-      );
-      if (input) {
-        input.focus();
-      }
-    });
+    // Move focus to next cell if available, else clear activeCell
+    if (nextCell) {
+      setActiveCell(nextCell);
+      requestAnimationFrame(() => {
+        const input = document.querySelector(
+          `.cell[data-row="${nextCell[0]}"][data-col="${nextCell[1]}"] input`
+        );
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    } else if (ship && ship.guessedLetters.join("") === ship.word) {
+      setActiveCell(null);
+    } else {
+      // Keep focus on current cell if guess was wrong
+      requestAnimationFrame(() => {
+        const input = document.querySelector(
+          `.cell[data-row="${row}"][data-col="${col}"] input`
+        );
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
   };
 
   const resetGame = () => {
@@ -699,7 +360,18 @@ function Tattleship() {
           </div>
           <div className="stat-group">
             <span className="stat-label">Score:</span>
-            <span className="stat-value">{score}</span>
+            <span className="stat-value">
+              {score}
+              {scoreAnimations.map((anim) => (
+                <span key={anim.id} className="score-float">
+                  +{anim.value}
+                </span>
+              ))}
+            </span>
+          </div>
+          <div className="stat-group">
+            <span className="stat-label">High Score:</span>
+            <span className="stat-value">{highScore}</span>
           </div>
         </div>
 
