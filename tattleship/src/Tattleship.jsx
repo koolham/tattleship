@@ -4,9 +4,9 @@ import { WORDS_2, WORDS_3, WORDS_4, WORDS_5, SHIP_WORDS } from "./words";
 
 const GRID_SIZE = 10;
 const DIFFICULTY = {
-  EASY: { ships: [2, 3, 3] },
+  EASY: { ships: [3, 3, 3] },
   MEDIUM: { ships: [2, 3, 3, 4] },
-  HARD: { ships: [2, 3, 3, 4, 5] },
+  HARD: { ships: [2, 3, 4, 5, 5] },
 };
 
 const DEFAULT_DIFFICULTY = "EASY";
