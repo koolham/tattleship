@@ -339,10 +339,6 @@ function Tattleship() {
           </button>
         </div>
 
-        <div className="message-placeholder">
-          <div className="event-message">{message}</div>
-        </div>
-
         <div className="stats">
           <div className="stat-group">
             <span className="stat-label">Hits:</span>
@@ -444,6 +440,9 @@ function Tattleship() {
               })}
             </div>
           ))}
+        </div>
+        <div className="message-placeholder">
+          <div className="event-message">{message}</div>
         </div>
       </div>
       <footer className="footer">
