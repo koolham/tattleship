@@ -54,6 +54,17 @@ function Tattleship() {
     }
   }, [gameOver, score, highScore]);
 
+  useEffect(() => {
+    setHits(0);
+    setMisses(0);
+    setGuesses(0);
+    setScore(0);
+    setGameOver(false);
+    setActiveCell(null);
+    setMessage("");
+    initializeGame(difficulty); // Pass the latest difficulty
+  }, [difficulty]);
+
   const showMessage = (msg, persist = false) => {
     setMessage(msg);
     if (messageTimeout.current) {
@@ -75,8 +86,8 @@ function Tattleship() {
     }, delay);
   };
 
-  const initializeGame = () => {
-    const shipSizes = DIFFICULTY[difficulty].ships;
+  const initializeGame = (difficultyArg = difficulty) => {
+    const shipSizes = DIFFICULTY[difficultyArg].ships;
     const newGrid = Array(GRID_SIZE)
       .fill()
       .map(() => Array(GRID_SIZE).fill(0));
@@ -311,12 +322,11 @@ function Tattleship() {
     setGameOver(false);
     setActiveCell(null);
     setMessage("");
-    initializeGame();
+    initializeGame(difficulty);
   };
 
   const handleDifficultyChange = (newDifficulty) => {
     setDifficulty(newDifficulty);
-    resetGame();
   };
 
   const getTotalShipCells = (difficulty) =>
