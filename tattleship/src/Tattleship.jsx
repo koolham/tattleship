@@ -40,6 +40,96 @@ function Tattleship() {
     const saved = localStorage.getItem("tattleshipHighScore");
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+
+  const tutorialSteps = [
+    {
+      title: "Welcome to Tattleship!",
+      content: (
+        <>
+          <p>
+            Tattleship is a word-based twist on Battleship. Your goal is to find
+            and sink all hidden ships on the grid!
+          </p>
+          <p>
+            Click <b>Next</b> to learn how to play.
+          </p>
+        </>
+      ),
+    },
+    {
+      title: "How to Play",
+      content: (
+        <>
+          <ul>
+            <li>
+              <b>Click</b> on a cell to fire a shot. If you hit a ship, you'll
+              reveal a letter!
+            </li>
+            <li>
+              When you spot a ship, the rest of its cells will be highlighted.
+              Guess the letters to sink the ship.
+            </li>
+            <li>
+              Type the correct letter in each highlighted cell to fill in the
+              ship's word.
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      title: "Scoring",
+      content: (
+        <>
+          <ul>
+            <li>
+              <b>Spot a ship:</b> +{SPOT_POINTS} points
+            </li>
+            <li>
+              <b>Correct letter:</b> +{HIT_POINTS} points
+            </li>
+            <li>
+              <b>Sinking a ship:</b> +{SUNK_POINTS} points
+            </li>
+            <li>
+              <b>Bonus:</b> Earn bonus points for efficiency at the end!
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      title: "Tips",
+      content: (
+        <>
+          <ul>
+            <li>
+              Use the <b>difficulty buttons</b> to change the challenge.
+            </li>
+            <li>
+              Click <b>Reset</b> to start a new game at any time.
+            </li>
+            <li>
+              Try to win with the fewest guesses and misses for a higher bonus!
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      title: "Ready to Play?",
+      content: (
+        <>
+          <p>
+            Good luck, Captain! Click <b>Close</b> to start your game.
+          </p>
+        </>
+      ),
+    },
+  ];
+
   let scoreAnimId = useRef(0);
   const messageTimeout = useRef();
 
@@ -332,6 +422,15 @@ function Tattleship() {
   const getTotalShipCells = (difficulty) =>
     DIFFICULTY[difficulty].ships.reduce((sum, size) => sum + size, 0);
 
+  const openTutorial = () => {
+    setShowTutorial(true);
+    setTutorialStep(0);
+  };
+
+  const closeTutorial = () => {
+    setShowTutorial(false);
+  };
+
   return (
     <div className="game-container">
       <div className="tattleship">
@@ -345,6 +444,14 @@ function Tattleship() {
           />
           <h1 style={{ margin: "16px 0 0 0" }}>Tattleship</h1>
         </div>
+
+        <button
+          className="tutorial-button"
+          onClick={openTutorial}
+          style={{ margin: "12px 0" }}
+        >
+          How to Play
+        </button>
 
         <div className="difficulty-controls">
           {Object.keys(DIFFICULTY).map((diff) => (
@@ -468,6 +575,30 @@ function Tattleship() {
         <div className="message-placeholder">
           <div className="event-message">{message}</div>
         </div>
+
+        {showTutorial && (
+          <div className="tutorial-modal">
+            <div className="tutorial-content">
+              <h2>{tutorialSteps[tutorialStep].title}</h2>
+              <div>{tutorialSteps[tutorialStep].content}</div>
+              <div className="tutorial-controls">
+                {tutorialStep > 0 && (
+                  <button onClick={() => setTutorialStep(tutorialStep - 1)}>
+                    Back
+                  </button>
+                )}
+                {tutorialStep < tutorialSteps.length - 1 ? (
+                  <button onClick={() => setTutorialStep(tutorialStep + 1)}>
+                    Next
+                  </button>
+                ) : (
+                  <button onClick={closeTutorial}>Close</button>
+                )}
+              </div>
+            </div>
+            <div className="tutorial-backdrop" onClick={closeTutorial} />
+          </div>
+        )}
       </div>
       <footer className="footer">
         &copy; {new Date().getFullYear()}{" "}
